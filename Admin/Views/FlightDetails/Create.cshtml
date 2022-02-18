@@ -1,0 +1,50 @@
+﻿@model Admin.Models.FlightDetail
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>FlightDetail</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FlightNumber" class="control-label"></label>
+                <input asp-for="FlightNumber" class="form-control" />
+                <span asp-validation-for="FlightNumber" class="text-danger"></span>
+            </div>
+            <div cl
+            <div class="form-group">
+                <label asp-for="FlightName" class="control-label"></label>
+                <input asp-for="FlightName" class="form-control" />
+                <span asp-validation-for="FlightName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FlightModel" class="control-label"></label>
+                <input asp-for="FlightModel" class="form-control" />
+                <span asp-validation-for="FlightModel" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Isactive" /> @Html.DisplayNameFor(model => model.Isactive)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
