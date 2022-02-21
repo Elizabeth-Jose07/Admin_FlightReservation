@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Admin.Controllers
 {
+    [Authorize]
     public class FlightInfoesController : Controller
     {
         private readonly Admin_Context _context;
@@ -47,7 +49,8 @@ namespace Admin.Controllers
         // GET: FlightInfoes/Create
         public IActionResult Create()
         {
-            ViewData["FlightNumber"] = new SelectList(_context.Flightdetails, "FlightNumber", "FlightName");
+            var flightDetails = _context.Flightdetails.Where(fs => fs.Isactive != false);
+            ViewData["FlightNumber"] = new SelectList(flightDetails, "FlightNumber", "FlightName");
             return View();
         }
 
@@ -64,7 +67,9 @@ namespace Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FlightNumber"] = new SelectList(_context.Flightdetails, "FlightNumber", "FlightName", flightInfo.FlightNumber);
+            var flightDetails = _context.Flightdetails.Where(fs => fs.Isactive != false);
+            ViewData["FlightNumber"] = new SelectList(flightDetails, "FlightNumber", "FlightName" ,flightInfo.FlightNumber);
+            //ViewData["FlightNumber"] = new SelectList(_context.Flightdetails, "FlightNumber", "FlightName", flightInfo.FlightNumber);
             return View(flightInfo);
         }
 
@@ -101,8 +106,14 @@ namespace Admin.Controllers
             {
                 try
                 {
+                    //Check if the isActive field has been set to false
+
                     _context.Update(flightInfo);
                     await _context.SaveChangesAsync();
+
+                    
+
+                      
                 }
                 catch (DbUpdateConcurrencyException)
                 {

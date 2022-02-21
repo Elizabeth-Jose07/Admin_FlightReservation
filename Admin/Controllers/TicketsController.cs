@@ -6,27 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Admin.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Admin.Controllers
 {
-    [Authorize]
-    public class FlightDetailsController : Controller
+    public class TicketsController : Controller
     {
         private readonly Admin_Context _context;
 
-        public FlightDetailsController(Admin_Context context)
+        public TicketsController(Admin_Context context)
         {
             _context = context;
         }
 
-        // GET: FlightDetails
+        // GET: Tickets
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Flightdetails.ToListAsync());
+            var admin_Context = _context.Tickets.Include(t => t.Booking);
+            return View(await admin_Context.ToListAsync());
         }
 
-        // GET: FlightDetails/Details/5
+        // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,39 +33,42 @@ namespace Admin.Controllers
                 return NotFound();
             }
 
-            var flightDetail = await _context.Flightdetails
-                .FirstOrDefaultAsync(m => m.FlightNumber == id);
-            if (flightDetail == null)
+            var ticket = await _context.Tickets
+                .Include(t => t.Booking)
+                .FirstOrDefaultAsync(m => m.TicketId == id);
+            if (ticket == null)
             {
                 return NotFound();
             }
 
-            return View(flightDetail);
+            return View(ticket);
         }
 
-        // GET: FlightDetails/Create
+        // GET: Tickets/Create
         public IActionResult Create()
         {
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId");
             return View();
         }
 
-        // POST: FlightDetails/Create
+        // POST: Tickets/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FlightNumber,FlightName,FlightModel,Isactive")] FlightDetail flightDetail)
+        public async Task<IActionResult> Create([Bind("TicketId,TicketStatus,FirstName,LastName,Class,Age,Gender,SeatNumber,BookingId")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(flightDetail);
+                _context.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(flightDetail);
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId", ticket.BookingId);
+            return View(ticket);
         }
 
-        // GET: FlightDetails/Edit/5
+        // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -74,22 +76,23 @@ namespace Admin.Controllers
                 return NotFound();
             }
 
-            var flightDetail = await _context.Flightdetails.FindAsync(id);
-            if (flightDetail == null)
+            var ticket = await _context.Tickets.FindAsync(id);
+            if (ticket == null)
             {
                 return NotFound();
             }
-            return View(flightDetail);
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId", ticket.BookingId);
+            return View(ticket);
         }
 
-        // POST: FlightDetails/Edit/5
+        // POST: Tickets/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FlightNumber,FlightName,FlightModel,Isactive")] FlightDetail flightDetail)
+        public async Task<IActionResult> Edit(int id, [Bind("TicketId,TicketStatus,FirstName,LastName,Class,Age,Gender,SeatNumber,BookingId")] Ticket ticket)
         {
-            if (id != flightDetail.FlightNumber)
+            if (id != ticket.TicketId)
             {
                 return NotFound();
             }
@@ -98,28 +101,12 @@ namespace Admin.Controllers
             {
                 try
                 {
-                   
-                    _context.Update(flightDetail);
+                    _context.Update(ticket);
                     await _context.SaveChangesAsync();
-
-                        //Get all the flightInfos whose FlightNumber match the Id of flightDetails and updates the isActive value
-                        //_context.FlightInfos.Where(e => e.FlightNumber == id).BatchUpdate(new Item { isActive = false })
-
-                        foreach (var prod in _context.FlightInfos)
-                        {
-                            if (prod.FlightNumber == id)
-                            {
-                                prod.IsActive = flightDetail.Isactive ;
-                            }
-
-                        }
-                        await _context.SaveChangesAsync();
-                    
-                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FlightDetailExists(flightDetail.FlightNumber))
+                    if (!TicketExists(ticket.TicketId))
                     {
                         return NotFound();
                     }
@@ -130,10 +117,11 @@ namespace Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(flightDetail);
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId", ticket.BookingId);
+            return View(ticket);
         }
 
-        // GET: FlightDetails/Delete/5
+        // GET: Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,32 +129,31 @@ namespace Admin.Controllers
                 return NotFound();
             }
 
-            var flightDetail = await _context.Flightdetails
-                .FirstOrDefaultAsync(m => m.FlightNumber == id);
-            if (flightDetail == null)
+            var ticket = await _context.Tickets
+                .Include(t => t.Booking)
+                .FirstOrDefaultAsync(m => m.TicketId == id);
+            if (ticket == null)
             {
                 return NotFound();
             }
 
-            return View(flightDetail);
+            return View(ticket);
         }
 
-        // POST: FlightDetails/Delete/5
+        // POST: Tickets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var flightDetail = await _context.Flightdetails.FindAsync(id);
-            //_context.Flightdetails.Remove(flightDetail);
-            flightDetail.Isactive = false;
-            _context.Update(flightDetail);
+            var ticket = await _context.Tickets.FindAsync(id);
+            _context.Tickets.Remove(ticket);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool FlightDetailExists(int id)
+        private bool TicketExists(int id)
         {
-            return _context.Flightdetails.Any(e => e.FlightNumber == id || e.Isactive!=false);
+            return _context.Tickets.Any(e => e.TicketId == id);
         }
     }
 }

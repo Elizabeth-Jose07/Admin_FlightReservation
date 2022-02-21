@@ -1,16 +1,15 @@
 ﻿@model IEnumerable<Admin.Models.FlightDetail>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "FlightDetails";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h4>All Flight Details</h4>
+<p><a asp-action="Create">Add New Flight</a></p>
+    
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table" id="customers">
     <thead>
         <tr>
              <th>
