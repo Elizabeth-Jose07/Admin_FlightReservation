@@ -160,6 +160,16 @@ namespace Admin.Controllers
             //_context.Flightdetails.Remove(flightDetail);
             flightDetail.Isactive = false;
             _context.Update(flightDetail);
+
+            foreach (var prod in _context.FlightInfos)
+            {
+                if (prod.FlightNumber == id)
+                {
+                    prod.IsActive = flightDetail.Isactive;
+                }
+
+            }
+            //await _context.SaveChangesAsync();
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
