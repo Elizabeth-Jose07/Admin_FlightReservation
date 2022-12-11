@@ -8,6 +8,11 @@ namespace Admin.Models
     [Table("Bookings")]
     public class Booking
     {
+        public Booking()
+        {
+            TranStatus = true;
+        }
+
         [Key]
         public long BookingId { get; set; }
         [Required]
@@ -23,7 +28,7 @@ namespace Admin.Models
         public DateTime Validity { get; set; }
         public int Cvv { get; set; }
 
-        [DefaultValue(false)]
+       
         public bool TranStatus { get; set; } 
 
         public string Remarks { get; set; }

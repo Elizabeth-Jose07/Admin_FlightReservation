@@ -1,11 +1,47 @@
-﻿@model Admin.Models.Booking
+﻿
+@model Admin.Models.Booking
+
+
+
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script>
+    function generate() {
 
-<h1>Create</h1>
+        var a = parseInt(document.getElementById("nochapter").value);
+        var ch = document.getElementById("ch");
+
+        for (i = 0; i < a; i++) {
+            var input = document.createElement("input");
+            ch.appendChild(input);
+        }
+    }
+    </script>
+
+    <script>
+            function calculateAmount(val) {
+                var ch=parseInt(document.getElementById("nochapter").value);
+                var totalprice;
+                if(val=="Business class")
+                {
+                     totalprice= ch*8000;
+                }
+                else
+                {
+                      totalprice= ch*4000;
+                }
+               
+                
+                /*display the result*/
+                var divobj = document.getElementById('totalprice');
+                divobj.value = totalprice;
+            }
+        </script>
+
+
 
 <h4>Booking</h4>
 <hr />
@@ -13,14 +49,36 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+             <div class="form-group">
+                <label asp-for="UserId" class="control-label">User</label>
+                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+            </div>
+             <div class="form-group">
+                <label asp-for="FlightId" class="control-label">Flight</label>
+                <select asp-for="FlightId" class ="form-control" asp-items="ViewBag.FlightId"></select>
+            </div>
             <div class="form-group">
-                <label asp-for="NoOfSeats" class="control-label"></label>
-                <input asp-for="NoOfSeats" class="form-control" />
+                <label asp-for="NoOfSeats" class="control-label">Number of passengers</label>
+                <input asp-for="NoOfSeats" class="form-control" id="nochapter"/>
+               
+                <input type="button" value="Add passenger details" class="btn btn-primary" onclick="generate()" />
+                <div id="ch"></div>
+           
                 <span asp-validation-for="NoOfSeats" class="text-danger"></span>
+            </div>
+             <div class="form-group">
+                <label  class="control-label">Class</label>
+                <select  name="Class" onchange="calculateAmount(this.value)" required>
+			     <option value="" disabled selected>Choose your option</option>
+			     <option value="Business class">Business class</option>
+			      <option value="Economy class">Economy class</option> 
+                </select>
+               
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
+                <input id="totalprice" name="totalprice" class="form-control" placeholder="calculated amount"readonly  />
+                <input asp-for="Amount" class="form-control"/>
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -40,27 +98,21 @@
             </div>
             <div class="form-group">
                 <label asp-for="Cvv" class="control-label"></label>
-                <input asp-for="Cvv" class="form-control" />
+                <input asp-for="Cvv" class="form-control"/>
                 <span asp-validation-for="Cvv" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
+            @*<div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TranStatus" /> @Html.DisplayNameFor(model => model.TranStatus)
+                    <input class="form-check-input" asp-for="TranStatus"/> @Html.DisplayNameFor(model => model.TranStatus)
                 </label>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Remarks" class="control-label"></label>
                 <input asp-for="Remarks" class="form-control" />
                 <span asp-validation-for="Remarks" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="FlightId" class="control-label"></label>
-                <select asp-for="FlightId" class ="form-control" asp-items="ViewBag.FlightId"></select>
-            </div>
+           
+           
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -71,6 +123,7 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<Admin.Models.Booking>
 
+
 @{
     ViewData["Title"] = "Bookings";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,9 +8,9 @@
 
 <h4>All Bookings</h4>
 
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>*@
+<p>
+    <a asp-action="Create"> New Booking</a>
+</p>
 <table class="table" id="customers">
     <thead>
         <tr>
@@ -88,7 +89,7 @@
             <td>
                 @*<a asp-action="Edit" asp-route-id="@item.BookingId">Edit</a> |*@
                 <a asp-action="Details" asp-route-id="@item.BookingId">Details</a> 
-@*                <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>*@
+             @*  <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>*@
             </td>
         </tr>
 }

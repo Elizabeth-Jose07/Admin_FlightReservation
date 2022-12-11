@@ -64,6 +64,14 @@ namespace Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                //if (.Class == "Business class")
+                //{
+                //    totalprice = ch * 8000;
+                //}
+                //else
+                //{
+                //    totalprice = ch * 4000;
+                //}
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -163,5 +171,33 @@ namespace Admin.Controllers
         {
             return _context.Bookings.Any(e => e.BookingId == id);
         }
-    }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<FlightInfo>>> GetAllFlightInfos(string Source, string Destination)
+        {
+
+
+            if (!String.IsNullOrEmpty(Source) && !String.IsNullOrEmpty(Destination))
+            {
+                var flights = await _context.FlightInfos.Where(s => s.Source.ToLower()!.Contains(Source.ToLower()) && s.Destination.ToLower()!.Contains(Destination.ToLower())).ToListAsync();
+                return flights;
+
+            }
+            else if (!String.IsNullOrEmpty(Source))
+            {
+                var flights = await _context.FlightInfos.Where(s => s.Source.ToLower()!.Contains(Source.ToLower())).ToListAsync();
+                return flights;
+            }
+            else if (!String.IsNullOrEmpty(Destination))
+            {
+                var flights = await _context.FlightInfos.Where(s => s.Destination.ToLower()!.Contains(Destination.ToLower())).ToListAsync();
+                return flights;
+            }
+
+
+            return await _context.FlightInfos.ToListAsync();
+
+        }
 }
+    }
